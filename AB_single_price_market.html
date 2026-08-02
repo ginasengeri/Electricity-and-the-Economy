@@ -1,1 +1,467 @@
+<!DOCTYPE html>
 
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Wind Volatility and Alberta's Single-Price Market</title>
+  <style>
+    * { box-sizing: border-box; }
+
+body {
+font-family: system-ui, -apple-system, BlinkMacSystemFont, “Segoe UI”, sans-serif;
+margin: 0;
+padding: 32px 16px;
+background: #f4f5f7;
+color: #111827;
+}
+
+.report-container {
+max-width: 1100px;
+margin: 0 auto;
+background: #ffffff;
+border-radius: 12px;
+padding: 28px 32px 36px;
+box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+}
+
+header {
+text-align: center;
+padding: 20px 0 30px;
+}
+
+header .label {
+font-size: 0.75rem;
+letter-spacing: 2px;
+text-transform: uppercase;
+color: #6b7280;
+margin-bottom: 12px;
+}
+
+header h1 {
+font-size: 1.4rem;
+font-weight: 800;
+margin: 0 0 12px;
+line-height: 1.25;
+}
+
+header p {
+margin: 0 auto 4px;
+color: #6b7280;
+font-size: 0.95rem;
+}
+
+.meta {
+text-align: center;
+font-size: 0.85rem;
+color: #9ca3af;
+margin-top: 10px;
+margin-bottom: 0;
+font-weight: 600;
+}
+
+.section ol {
+font-size: 0.97rem;
+line-height: 1.75;
+color: #374151;
+padding-left: 40px;
+margin: 0;
+}
+
+.section ol li {
+margin-bottom: 8px;
+}
+
+.section {
+margin-bottom: 32px;
+}
+
+.section h2 {
+font-size: 0.95rem;
+font-weight: 700;
+color: #111827;
+margin: 0 0 10px;
+border-bottom: 1px solid #e0e3e8;
+padding-bottom: 4px;
+}
+
+.section p {
+font-size: 0.97rem;
+line-height: 1.75;
+color: #374151;
+margin: 0 0 12px;
+}
+
+.viz-block {
+margin: 16px 0;
+}
+
+.viz-title {
+font-size: 0.78rem;
+letter-spacing: 0.08em;
+color: #9ca3af;
+margin-bottom: 8px;
+text-align: left;
+}
+
+.viz-block img {
+max-width: 500px;
+width: 100%;
+height: auto;
+display: block;
+margin: 0 auto;
+}
+
+.viz-note {
+font-size: 0.92rem !important;
+line-height: 1.5;
+color: #9ca3af !important;
+margin-top: 8px;
+padding-top: 8px;
+text-align: left;
+}
+
+.callout {
+background: #ecfdf5;
+border-left: 4px solid #10b981;
+border-radius: 6px;
+padding: 16px 20px;
+margin: 20px 0;
+font-size: 0.95rem;
+color: #374151;
+line-height: 1.65;
+}
+
+.table-scroll {
+width: 100%;
+overflow-x: auto;
+}
+
+table {
+width: 100%;
+min-width: 480px;
+border-collapse: collapse;
+font-size: 0.88rem;
+margin: 16px 0 8px;
+background: #ffffff;
+border-radius: 10px;
+overflow: hidden;
+box-shadow: 0 4px 16px rgba(15, 23, 42, 0.07);
+}
+
+th {
+background: #f3f4f6;
+padding: 10px 14px;
+text-align: left;
+font-weight: 600;
+border-bottom: 1px solid #e5e7eb;
+font-size: 0.82rem;
+}
+
+td {
+padding: 10px 14px;
+border-bottom: 1px solid #f3f4f6;
+color: #374151;
+}
+
+tr.highlight td {
+background: #ecfdf5;
+font-weight: 600;
+color: #065f46;
+}
+
+tr:last-child td { border-bottom: none; }
+
+.closing-box {
+background: #475569;
+color: #f9fafb;
+border-radius: 10px;
+padding: 24px 28px;
+margin-top: 36px;
+margin-bottom: 36px;
+}
+
+.closing-box h3 {
+margin: 0 0 10px;
+font-size: 1.1rem;
+font-weight: 700;
+color: #f9fafb;
+}
+
+.closing-box p {
+margin: 0;
+font-size: 1rem;
+line-height: 1.75;
+color: #e5e7eb;
+}
+
+footer {
+margin-top: 28px;
+padding-top: 16px;
+border-top: 1px solid #e0e3e8;
+text-align: center;
+font-size: 0.75rem;
+color: #9ca3af;
+}
+
+footer a {
+color: #2563eb;
+text-decoration: none;
+}
+
+a, a:visited, a:hover, a:active {
+color: #2563eb;
+}
+
+footer a:hover { text-decoration: underline; }
+
+@media (max-width: 800px) {
+.viz-block img {
+max-width: 100%;
+}
+
+.viz-note {
+max-width: 100%;
+font-size: 0.68rem;
+margin-top: 4px;
+}
+
+.callout {
+max-width: 100%;
+}
+}
+
+.tableau-container {
+  margin-top: 16px;
+  text-align: center;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+</style>
+  
+</head>
+  
+<body>
+<div class="report-container">
+  
+  <header>
+  <div class="label">Market Insights</div>
+  <h1>Wind Volatility and the Limits of Alberta's Single Pool Price</h1>
+  <p>January 2026 data shows how renewable variability shapes price behavior in Alberta's electricity market.</p>
+  <div class="meta">AESO &bull; January 2026</div>
+</header>
+
+  <div class="section" style="margin-bottom: 32;">
+
+  <p>Alberta operates in an energy-only 
+    electricity market where generators 
+    receive a single pool price 
+    for the power they produce. As renewable generation grows, 
+    this pricing structure struggles to 
+    reflect local congestion and scarcity 
+    conditions. January 2026 data 
+    illustrates these dynamics in 
+    Alberta's electricity system.</p>
+</div>
+
+<div class="section">
+  <h2>Key Market Insights</h2>
+  <ol>
+    <li>Wind generation was four times more variable than gas in January 2026 (coefficient of variation).</li>
+    <li>Gas generation balances wind variability (−0.65 correlation).</li>
+    <li>High wind output suppresses prices, while low wind during high demand can trigger price spikes.</li>
+  </ol>
+  
+      <p>These dynamics can complicate investment signals in Alberta's energy-only market.</p>
+</div>
+
+
+
+  <div class="section">
+    <h2>Three Days in January</h2>
+<p>Wind, demand, and weather conditions all influence pool prices. Despite the cold and low wind generation on
+  January 4, prices remained relatively low likely due to lower weekend demand. On January 5 at 11 a.m., the pool
+  price reached 858 CAD/MWh with the return of weekday demand and wind generation at 353 MW. By January 6, prices
+  fell to 0 CAD/MWh as wind generation increased significantly.</p>
+    
+<div class="viz-block">
+<div class="viz-title">Table 1 — Pool price and wind metered volume at 11 a.m. (MPT)</div>
+<div class="table-scroll">
+  <table>
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Wind at 11 a.m. (MW)</th>
+        <th>Pool price at 11 a.m. (CAD/MWh)</th>
+        <th>Temperature range (°C)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Jan 4</td>
+        <td>261</td>
+        <td>52.84</td>
+        <td>−31 to −12</td>
+      </tr>
+      <tr class="highlight">
+        <td>Jan 5</td>
+        <td>353</td>
+        <td>858.44</td>
+        <td>−13 to +2</td>
+      </tr>
+      <tr>
+        <td>Jan 6</td>
+        <td>3,782</td>
+        <td>0.00</td>
+        <td>−9 to +1</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+<p>Similar price spikes have occurred during other periods of demand stress. During the January 2024 cold
+  snap, for example, wind generation was low and pool prices reached the market cap of 999.99 CAD/MWh several times.</p>
+</div>
+  
+  <div class="section">
+    <h2>The Variability Problem</h2>
+
+<p>Unlike dispatchable generation, wind produces power on 
+  the resource's schedule. In January 2026, gas supplied roughly 75% 
+  of Alberta's total output and was the most 
+  stable source relative to its average output. 
+  Wind, at around 19%, fluctuated much more 
+  relative to its contribution.
+</p> 
+
+<div class="viz-block">
+  <div class="viz-title">Fig. 1 — Relative variability by fuel type (coefficient of variation), January 2026</div>
+  <img src="https://ginasengeri.github.io/energy-systems/energy_systems_analysis/AESO/images/fig1.png" alt="Relative variability by fuel type">
+  <p class="viz-note">
+    Variability is measured as the standard deviation of hourly output divided by mean generation (coefficient of variation). Solar and hydro are included for completeness; the primary comparison is between wind and gas, which make up over 94% of Alberta's generation mix.
+  </p>
+</div>
+
+<p>
+  Gas variability is largely in response to wind fluctuations, with operators ramping generation up and down to maintain system balance. This dynamic is 
+  reflected in the −0.65 correlation between the two.
+</p>
+
+  </div>
+
+  <div class="section">
+    <h2>The Investment Signal Problem</h2>
+    <p>With wind at near-zero marginal cost, 
+      high wind output hours tend to suppress pool 
+      prices. As wind generation increases, higher-cost 
+      gas generators are dispatched for fewer hours and rely on scarcity pricing to compensate for lost
+      operating hours. This, however, can make investment signals
+      less predictable.
+    </p>
+
+<div class="viz-block">
+  <div class="viz-title">Fig. 2 — Pool price vs wind metered volume (daily averages), January 2026</div>
+  <img src="https://ginasengeri.github.io/energy-systems/energy_systems_analysis/AESO/images/fig2.png" alt="Pool price vs wind metered volume">
+</div>
+
+<div class="callout">
+Alberta recorded 91 hours with pool prices at 0 CAD/MWh in January 2026.
+</div>
+    
+    <p>Gas generators provide essential security when wind drops. In a market where prices are suppressed or spike
+      unpredictably and revenues are uncertain, it becomes difficult to justify investment in the capacity the system
+      actually needs.</p>
+    <p>A single pool price does not always distinguish between cheap power that is useful and cheap power that 
+      is overwhelming the system. For example, surplus generation in one part of the grid may suppress system prices even when 
+      transmission constraints prevent that electricity from reaching higher-demand areas. 
+    </p>
+    <p>
+      This limited price resolution weakens investment signals for where new generation is most valuable.
+      As renewables grow, more precise pricing is required to reflect conditions across the system.</p>
+  </div>
+
+  <div class="section">
+    <h2>Restructuring Alberta's Energy-Only Market</h2>
+    <p>In 2016, Alberta began transitioning from an energy-only to a capacity market, where generators are paid to be available regardless
+      of whether they are running or not. This transition was cancelled in 2019, with the government retaining the energy-only model
+      to maintain affordability and a simpler market structure. Since then, increased Energy Emergency Alerts (EEAs) and price volatility
+      have reinforced the need for restructuring.</p>
+    <p>
+      The Alberta Electric System Operator (AESO) is implementing the Restructured Energy Market (REM), which includes the introduction of Locational Marginal Pricing (LMP). Under LMP, electricity prices vary by location based on local supply, demand, and transmission constraints. This allows prices to reflect congestion and scarcity conditions more accurately and provides clearer signals about where generation and flexibility are most needed. 
+      In addition, a new 30-minute ramping reserve product (R30) will compensate generators that can quickly increase or decrease output to help balance supply and demand.
+      </p>
+  <p>
+      The redesign also raises the market offer cap to 1500 CAD/MWh (2027) and 2000 CAD/MWh (2032), allowing prices to rise higher when supply is limited. A secondary offer cap for large generators is set at 400 CAD/MWh and is applied once market revenues have recovered the fixed costs of a reference generating unit. The price floor will drop from 0 CAD/MWh to -100 CAD/MWh in 2032 to incentivize reduced generation during periods of oversupply. 
+      </p>
+      
+        <p>
+      These changes are intended to improve price signals and system reliability while keeping electricity affordable.
+      </p>
+
+</div>
+
+<div class="section">
+  <h2>Data & Sources</h2>
+
+  <p>
+    Alberta Electric System Operator (AESO). <em>API Products</em>.
+    Available at: 
+    <a href="https://developer-apim.aeso.ca/apis" target="_blank">
+      https://developer-apim.aeso.ca/apis
+    </a>
+  </p>
+
+  <p>
+    Alberta Electric System Operator (AESO). <em>Restructured Energy Market (REM) Design Information Overview</em>.
+    Available at:
+    <a href="https://www.aeso.ca/assets/REM/AESO-REM-Design-Information-Overview.pdf" target="_blank">
+      https://www.aeso.ca/assets/REM/AESO-REM-Design-Information-Overview.pdf
+    </a>
+  </p>
+</div>
+
+<div class="section">
+  <h2>Technical Appendix</h2>
+  <p> 
+    AESO Data Pipeline 
+    Available at: 
+    <a href="https://ginasengeri.github.io/energy-systems/documentation/technical_appendix/AESO.html" target="_blank">
+      technical_appendix_aeso.html
+    </a>
+  </p>
+  
+<p>Pool Price and Wind Generation — January 2026</p>
+<div class="tableau-container">
+  <div class='tableauPlaceholder' id='myTableauViz2' style='position: relative'>
+    <object class='tableauViz' style='display:none;'>
+      <param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' />
+      <param name='embed_code_version' value='3' />
+      <param name='site_root' value='' />
+      <param name='name' value='WindvPriceScatter/Jan2-5PricevWindDash' />
+      <param name='tabs' value='no' />
+      <param name='toolbar' value='yes' />
+    </object>
+  </div>
+</div>
+</div>
+
+<script type='text/javascript'>
+  var placeholder = document.getElementById('myTableauViz2');
+  var viz = placeholder.getElementsByTagName('object')[0];
+  viz.style.width = '100%';
+  viz.style.height = '550px';
+  var script = document.createElement('script');
+  script.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';
+  viz.parentNode.insertBefore(script, viz);
+</script>
+  
+</div>
+  <footer>
+    <p>Data source: Alberta Electric System Operator (AESO) · January 2026</p>
+    <a href="energy_systems.html">← Back to Energy Systems</a>
+  </footer>
+
+</body>
+</html>
