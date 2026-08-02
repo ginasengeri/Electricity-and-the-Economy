@@ -1,1 +1,511 @@
+   <!DOCTYPE html> 
 
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Energy Systems — Eskom 2025-26</title>
+  <style>
+    :root {--bg-page: #f4f5f7; --bg-card: #ffffff; --border-soft: #e0e3e8;--accent: #2563eb; --accent-soft: #dbeafe; --text-main: #111827;--text-muted: #6b7280; --table-header: #f3f4f6; --chip: #eef2ff;}
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 32px 16px; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background-color: var(--bg-page); color: var(--text-main); }
+    .report-container { max-width: 1100px; margin: 0 auto; background: var(--bg-card); border-radius: 12px; padding: 28px 32px 36px; box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12); }
+    header { text-align: center; padding: 20px 0 10px; }
+    header .label { font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; color: #6b7280; margin-bottom: 12px; }
+    header h1 { font-size: 1.4rem; font-weight: 800; margin: 0 0 12px; line-height: 1.25; }
+    header p { margin: 0 auto; color: #6b7280; font-size: 0.94rem; }
+    .meta { text-align: center; font-size: 0.8rem; color: #9ca3af; margin-top: 10px; margin-bottom: 0; font-weight: 600; }
+    h2 { margin-top: 24px; margin-bottom: 8px; font-size: 1.05rem; font-weight: 700; border-bottom: 1px solid var(--border-soft); padding-bottom: 4px; }
+    .section p { font-size: 0.95rem; line-height: 1.7; color: #374151; margin: 0 0 12px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 0px 0 16px; justify-content: center; }
+    .chip { background: var(--chip); border: 1px solid rgba(37, 99, 235, 0.15); color: #1f2a5a; padding: 6px 10px; border-radius: 999px; font-size: 0.82rem; font-weight: 650; white-space: nowrap; }
+    h2 + ol, p + ol { margin-top: 14px; margin-bottom: 18px; }
+    ol li { margin-bottom: 8px; }
+    ol { margin-left: 20px; }
+    li { font-size: 0.95rem; line-height: 1.7; color: #374151; }
+    .chart-wrap { position: relative; width: 65%; margin: 12px auto 0; height: 380px; }
+    .chart-wrap canvas { display: block; }
+    .section p.chart-fig { font-size: 0.85rem; color: #9ca3af; text-align: left; margin-bottom: 6px; margin-top: 16px; }
+    .custom-legend { display: flex; flex-wrap: wrap; gap: 6px 24px; justify-content: center; margin-bottom: 12px; margin-top: 12px; }
+    .cl-item { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: #374151; }
+    .cl-line { width: 22px; height: 2.5px; border-radius: 2px; flex-shrink: 0; }
+    footer { margin-top: 28px; padding-top: 16px; border-top: 1px solid #e0e3e8; text-align: center; font-size: 0.75rem; color: #9ca3af; }
+    footer a { color: #2563eb; text-decoration: none; }
+    a, a:visited, a:hover, a:active { color: #2563eb; }
+    sup { font-size: 0.75em; }
+    sup a { color: #2563eb; text-decoration: none; }
+    sup a:hover { text-decoration: underline; }
+    .tables-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin-top: 10px; margin-bottom: 16px; }
+    .table-card { background: #ffffff; border-radius: 10px; border: 1px solid var(--border-soft); padding: 10px 12px; overflow: auto; }
+    .table-card h3 { margin-top: 0; margin-bottom: 6px; font-size: 1rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: unset; }
+    th, td { border: 1px solid var(--border-soft); padding: 6px 8px; text-align: left; white-space: nowrap; }
+    th { background-color: var(--table-header); font-weight: 600; }
+
+    /* ── Map card ── */
+    .map-embed {
+      position: relative; width: 92%; height: 520px;
+      border-radius: 10px; border: 1px solid var(--border-soft);
+      overflow: hidden; margin: 10px auto 6px;
+      background: #ffffff;
+    }
+    .map-embed svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+    #acec-panel {
+      position: absolute; top: 16px; left: 18px; z-index: 10;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    #acec-panel h3 { font-size: 12px; font-weight: 700; color: #111827; margin: 0; }
+    #acec-panel p  { font-size: 10px; line-height: 1.3; color: #6b7280; margin: 1px 0 0; }
+    #acec-cards    { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }
+    .ac {
+      background: #fff; border: 1px solid #e0e3e8; border-radius: 6px;
+      padding: 7px 12px 7px 10px; display: flex; align-items: center; gap: 8px;
+      white-space: nowrap; opacity: 0; animation: acup .35s ease forwards;
+    }
+    .ac-bar  { width: 3px; align-self: stretch; border-radius: 2px; flex-shrink: 0; }
+    .ac-body { display: flex; flex-direction: column; }
+    .ac-lbl  { font-size: 10px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 2px; }
+    .ac-row  { display: flex; align-items: baseline; gap: 3px; }
+    .ac-val  { font-size: 17px; font-weight: 700; letter-spacing: -.5px; line-height: 1; }
+    .ac-unit { font-size: 10px; color: #9ca3af; }
+    .ac-sub  { font-size: 10px; color: #9ca3af; margin-top: 1px; }
+    #acec-legend {
+      position: absolute; bottom: 14px; right: 16px; z-index: 10;
+      background: #fff; border: 1px solid #e0e3e8; border-radius: 6px;
+      padding: 7px 11px; display: flex; flex-direction: column; gap: 5px;
+      opacity: 0; animation: acup .35s .5s ease forwards;
+    }
+    .leg-item { display: flex; align-items: center; gap: 6px; font-size: 10px; color: #6b7280; }
+    .leg-dot  { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    @keyframes acup { from { opacity:0; transform:translateY(3px); } to { opacity:1; transform:none; } }
+  </style>
+</head>
+<body>
+<div class="report-container">
+  <header>
+    <div class="label">Energy Systems</div>
+    <h1>Recovery and Constraint in South Africa's Power System</h1>
+    <p>This analysis discusses South Africa's recovery from an electricity crisis, the resulting constraints, and the role of regional expansion in addressing them.</p>
+    <div class="meta">Eskom &bull; 2025-26</div>
+  </header>
+
+  <div class="chips">
+    <span class="chip">Eskom Recovery</span>
+    <span class="chip">Coal Repurposing</span>
+    <span class="chip">Grid Flexibility</span>
+    <span class="chip">Africa Clean Energy Corridor</span>
+  </div>
+
+  <section class="section">
+  <h2>System Overview</h2>
+  <p>
+    Beginning in 2007, South Africa faced a major electricity crisis which peaked in 2022, with 205 days of load shedding. 
+    The crisis has commonly been attributed to insufficient maintenance of coal-fired power stations, as well as governance challenges.
+  </p>
+  <p>  
+    Significant progress has since been made, with no load shedding recorded since March 2024. Several factors now shape South Africa's
+    changing energy landscape:
+  </p>
+  <ol>
+    <li>Operational recovery — restoration of coal plant performance improves grid stability.</li>
+    <li>Coal repurposing and renewable deployment — introduces constraints on flexibility and capacity.</li>
+    <li>Regional trade — addresses these constraints through cross-border power exchange.</li>
+  </ol>
+  <p>
+    With constantly shifting factors (i.e. future demand, weather patterns, fuel prices, technology costs, policy conditions),
+    efforts to improve reliability and expand capacity introduce new constraints that require ongoing adjustment.</p>
+
+  <h2>Operational Recovery</h2>
+  <p>Reduced load shedding in South Africa has been driven primarily by improved performance at coal power stations,
+     along with increased adoption of private renewable energy<sup><a href="#ref1">[1]</a></sup>.
+     Over the financial year 2025-26, Eskom's Energy Availability Factor (EAF) reached or exceeded the 70% milestone on 83 occasions,
+     while more than 4100 MW of private capacity was added in the first half of 2025<sup><a href="#ref2">[2]</a></sup>.</p>
+  <p class="chart-fig">Fig. 1 — Eskom operational recovery, 2025–26.</p>
+  <div class="custom-legend">
+    <div class="cl-item"><div class="cl-line" style="background:#2563eb"></div><span>EAF, energy available</span></div>
+    <div class="cl-item"><div class="cl-line" style="background:#dc2626"></div><span>UCLF, unplanned outages</span></div>
+  </div>
+  <div class="chart-wrap"><canvas id="c1"></canvas></div>
+  <br>
+  <p>Diesel-fired Open Cycle Gas Turbines (OCGTs) were previously used to reduce the severity of load-shedding, and have seen a significant decline in usage over 2025. These units are both inefficient (34-36% thermal efficiency) and costly, with diesel generation approximately 11 times more expensive than coal in 2025 (6084R/MWh vs 546R/MWh)<sup><a href="#ref3">[3]</a></sup>.</p>
+  <p>Between April 2025 and March 2026, OCGT generation reduced by 460 GWh, corresponding to an approximate reduction in diesel expenditure of R1.87bn.</p>
+  <p class="chart-fig">Fig. 2 — OCGT generation (diesel peakers),  2025–2026. Hover to see estimated fuel costs.</p>
+  <div class="custom-legend">
+    <div class="cl-item"><div class="cl-line" style="background:#2563eb"></div><span>Eskom + IPP OCGT (GWh)</span></div>
+  </div>
+  <div class="chart-wrap"><canvas id="c2"></canvas></div>
+  <br>
+  <p>Overall, lower OCGT usage reflects improved coal plant performance and reduced reliance on emergency generation.</p>
+  </section>
+
+  <section class="section">
+  <h2>Coal Repurposing &amp; Renewables Deployment</h2>
+  <p>While reliability of power supply has improved, South Africa's long-term energy strategy introduces a different set of constraints: flexibility and supply gaps.</p>
+  <p>South Africa's coal fleet was designed for steady baseload operation, where output remains above a minimum stable load. Operating below this threshold can 
+    create uneven thermal gradients across boilers, leading to thermal stress and long-term material fatigue. This lack of flexibility contributes to grid congestion
+     as renewable capacity is added, increasing the need for curtailment<sup><a href="#ref4">[4]</a></sup>.</p>
+  <p>
+    Alongside this, long-term plans to reduce coal capacity create the challenge of replacing lost baseload generation on schedule. 
+    Eskom plans to decommission nine coal power plants by 2035, and increase renewable capacity to 32 GW by 2040 <sup><a href="#ref5">[5]</a></sup>.
+    The specific technologies used in repurposing remain uncertain, with nuclear and gas plants being considered to complement renewables.
+    The International Renewable Energy Agency (IRENA) has developed a System Planning Test (SPLAT) to model capacity expansion for Africa, illustrating expected changes under a 2019 reference scenario<sup><a href="#ref6">[6]</a></sup>.</p>
+  <p class="chart-fig">Fig. 3 — Coal capacity loss vs renewable capacity added, 2010–2040</p>
+  <div class="custom-legend">
+    <div class="cl-item"><div class="cl-line" style="background:#374151"></div><span>Coal</span></div>
+    <div class="cl-item"><div class="cl-line" style="background:#d97706"></div><span>Solar PV</span></div>
+    <div class="cl-item"><div class="cl-line" style="background:#2563eb"></div><span>Wind</span></div>
+    <div class="cl-item"><div class="cl-line" style="background:#16a34a"></div><span>Solar + Wind</span></div>
+    <div class="cl-item"><div style="width:22px;height:0;border-top:2px dashed #9ca3af;align-self:center"></div><span>SPLAT REF projection</span></div>
+  </div>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:12px 0;">
+    <div>
+      <p class="chart-fig" style="text-align:center; margin-top:0; margin-bottom:4px;">Coal generation share</p>
+      <div style="position:relative; height:300px;"><canvas id="c3a"></canvas></div>
+    </div>
+    <div>
+      <p class="chart-fig" style="text-align:center; margin-top:0; margin-bottom:4px;">Solar &amp; wind generation share</p>
+      <div style="position:relative; height:300px;"><canvas id="c3b"></canvas></div>
+    </div>
+  </div>
+  <p style="font-size:0.8rem; color:#9ca3af; margin-top:4px;"><em>Note: SPLAT projections are based on a 2019 reference scenario and do not reflect subsequent changes in future demand, technology costs, fuel prices, climate change or policy. South Africa's renewable deployment has already exceeded the model's 2019 baseline, which accounts for the discontinuity at the gap.</em></p>
+  <p>A majority of renewable capacity is expected to come from solar PV and wind, accounting for an estimated 37% of domestic demand 
+    by 2040. IRENA's projections show coal generation dropping to 48% by 2035, while solar and wind rise to 39%. Timely deployment of
+    repurposing projects will be key to maintaining stable and reliable supply of electricity.</p>
+
+  </section>
+
+  <section class="section">
+  <h2>Regional Electricity Trade</h2>
+  <p>
+    Regional electricity trade plays a role in addressing  flexibility constraints and supply gaps.
+  </p>
+  <p>
+    South Africa has acted as a net exporter in the Southern African Power Pool (SAPP) since 2003, supplying electricity to neighbouring
+    countries including Eswatini, Botswana, Zambia, and Lesotho.
+    Regional integration is expected to expand through initiatives such as the African Clean Energy Corridor (ACEC), which links the
+    Southern and Eastern African power pools.
+   </p>
+   <p> 
+    IRENA models six scenarios to illustrate a range of possible outcomes, including a reference
+    scenario (base case), variations in renewable deployment, changes in hydrology and degree of regional integration.
+    Across all scenarios, South Africa becomes the largest net importer of electricity in the region by 
+    2040, reaching 62 TWh of net imports in the reference case. This reflects coal decommissioning, the expansion of
+    variable renewables, and rising electricity demand, projected at 382 TWh in 2040. The largest exports
+    in the region are expected to come from the Grand Inga Dam on the Congo River.
+  </p>
+
+  <p class="chart-fig" style="margin-top:20px;">Fig. 4 — ACEC net trade positions, 2040 (IRENA SPLAT reference case)</p>
+
+  <!-- ── Map card ── -->
+  <div class="map-embed" id="acec-wrap">
+    <svg id="acec-map-svg"></svg>
+
+    <div id="acec-panel">
+      <div>
+        <h3>ACEC Net Trade Positions</h3>
+        <p>Africa Clean Energy Corridor · 2040</p>
+      </div>
+      <div id="acec-cards"></div>
+    </div>
+
+    <div id="acec-legend">
+      <div class="leg-item"><div class="leg-dot" style="background:#dc2626"></div>Net importer</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#16a34a"></div>Net exporter</div>
+    </div>
+  </div>
+
+  <p style="font-size:0.8rem;color:#9ca3af;margin-top:6px;"><em>The SPLAT model uses data from the EAPP (2014) and SAPP (2017) master plans for assumptions on demand, costs and generation capacity. Projected country trade positions reflect these model assumptions and should be interpreted in this context.</em></p>
+
+  <p>The diversity of resources in the ACEC region creates opportunities for efficiency gains, with total trade flows projected to increase
+     to around five times their 2020 level.</p>
+
+  <div class="table-card">
+    <h3>Total Trade Flows (TWh)</h3>
+    <table>
+      <thead>
+        <tr>
+          <th></th>
+          <th style="text-align:right;">REF</th>
+          <th style="text-align:right;">TxNoLim</th>
+          <th style="text-align:right;">VREHigh</th>
+          <th style="text-align:right;">VRELim</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td style="font-weight:600;">2020</td><td style="text-align:right;">39.4</td><td style="text-align:right;">39.4</td><td style="text-align:right;">39.6</td><td style="text-align:right;">39.4</td></tr>
+        <tr><td style="font-weight:600;">2040</td><td style="text-align:right;">182.2</td><td style="text-align:right;">196.9</td><td style="text-align:right;">179.5</td><td style="text-align:right;">232.6</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:0.8rem; color:#9ca3af; margin-top:4px;"><em>Reference scenario (REF), Unlimited interconnector capacity expansion (TxNoLim), 50% variable renewables in 2040 (VREHigh), Limited penetration of VRE to 20% (VRELim)</em></p>
+
+  <p>
+    The largest increase in trade flows is observed in the scenario with limited renewable deployment, with a 5.9× increase.
+    In contrast, high renewable deployment enables major consumer countries (Egypt, South Africa, Kenya, and Ethiopia) to 
+    generate more domestic power, reducing imports and overall trade volumes (a 4.5× increase, the smallest among the four scenarios). 
+    In all cases, the entire region benefits from efficiency gains as seen by the 
+    consistent projected increase in trade flows. 
+  </p>
+  <p>
+    Cross-border trade can create dependency on individual countries’ resources if not well coordinated, especially as reliance
+    on imports for balancing increases. Avoiding this
+    requires coordination between utilities, regulators, and system operators to ensure financing is secured and projects are commissioned
+    on schedule. Access to transparent data across interconnected grids is also essential to support future planning and operational improvement.
+  </p>
+  </section>
+
+  <section class="section">
+  <h2>Data Sources</h2>
+  <p>Eskom (2026). <em>Outage Performance</em> Available at: <a href="https://www.eskom.co.za/dataportal/" target="_blank">https://www.eskom.co.za/dataportal/</a></p>
+  <p>Fuel SA (2026). <em>Historic Fuel Prices</em> Available at: <a href="https://www.fuelsa.co.za/#history">https://www.fuelsa.co.za/#history</a></p>
+  <p>IRENA (2019). <em>System Planning Test SPLAT Models for Africa</em> Available at: <a href="https://www.irena.org/Energy-Transition/Planning/SPLAT-Models-for-Africa" target="_blank">https://www.irena.org/</a></p>
+  <p>IEA (2023). <em>Where does Africa get its electricity?</em> Available at: <a href="https://www.iea.org/regions/africa/electricity" target="_blank">https://www.iea.org/regions/africa/electricity</a></p>
+  </section>
+
+  <section class="section">
+  <h2>References</h2>
+  <ol>
+    <li id="ref1">Eskom (2026). <em>ESKOM Maintains Grid Stability with Continued Generation Improvements.</em> Available at: <a href="https://www.eskom.co.za/eskom-maintains-grid-stability-with-continued-generation-improvements/" target="_blank">https://www.eskom.co.za/eskom-maintains-grid-stability-with-continued-generation-improvements/</a></li>
+    <li id="ref2">Ecofin Agency. <em>Private Sector Powers South Africa's Decarbonization Push.</em> Available at: <a href="https://www.ecofinagency.com/news-industry/1311-50446-private-sector-powers-south-africa-s-decarbonisation-push" target="_blank">https://www.ecofinagency.com/news-industry/</a></li>
+    <li id="ref3">Eskom (2025). <em>Integrated Report 2025.</em> Available at: <a href="https://www.eskom.co.za/wp-content/uploads/2025/09/Eskom-integrated-report-2025.pdf#page=86" target="_blank">https://www.eskom.co.za/wp-content/uploads/2025/</a></li>
+    <li id="ref4">Eskom (2025). <em>Congestion Curtailment Practice Note October 2025.</em> Available at: <a href="https://www.eskom.co.za/distribution/wp-content/uploads/2025/10/Congestion-Curtailment-Practice-Note-October-2025.pdf" target="_blank">https://www.eskom.co.za/distribution/wp-content/uploads/2025/10/Congestion-Curtailment-Practice-Note-October-2025.pdf</a></li>
+    <li id="ref5">Enerdata (2025). <em>South Africa's Eskom will cut coal capacity and boost renewables by 2040</em> Available at: <a href="https://www.enerdata.net/publications/daily-energy-news/south-africas-eskom-will-cut-coal-capacity-and-boost-renewables-2040.html" target="_blank">https://www.reuters.com/sustainability/</a></li>
+    <li id="ref6">IRENA (2021). <em>Planning Prospects for Africa.</em> Available at: <a href="https://www.irena.org/-/media/Files/IRENA/Agency/Publication/2021/Apr/IRENA_Planning_Prospects_Africa_2021.pdf" target="_blank">https://www.irena.org/publications/planning-prospects-africa-2021.pdf</a></li>
+  </ol>
+  </section>
+</div>
+
+<footer>
+  <p>Data source: Eskom · 2025-26</p>
+  <a href="energy_systems.html">← Back to Energy Systems</a>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/2.2.1/chartjs-plugin-annotation.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+
+<script>
+Chart.defaults.font.family = "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+const TOOLTIP = { backgroundColor:'#ffffff', borderColor:'#e0e3e8', borderWidth:1, titleColor:'#111827', bodyColor:'#374151', padding:10, boxWidth:8, boxHeight:8, usePointStyle:true };
+const AXIS_X = { grid:{display:false}, border:{color:'#e0e3e8'}, ticks:{color:'#6b7280',font:{size:11}} };
+const AXIS_Y = { grid:{display:false}, border:{color:'#e0e3e8'}, ticks:{color:'#6b7280',font:{size:11}} };
+
+new Chart(document.getElementById('c1'), {
+  type:'line',
+  data:{ labels:['Mar 25','Apr 25','May 25','Jun 25','Jul 25','Aug 25','Sep 25','Oct 25','Nov 25','Dec 25','Jan 26','Feb 26','Mar 26','Apr 26'],
+    datasets:[
+      {label:'EAF', data:[56.9,56.1,59.0,60.2,63.8,66.2,70.2,65.7,68.2,68.9,71.0,68.4,66.7,62.1], borderColor:'#2563eb', fill:false, tension:0.3, pointRadius:0, pointHoverRadius:3, borderWidth:2},
+      {label:'UCLF', data:[28.2,28.6,29.0,31.2,25.9,21.3,18.3,21.9,19.1,19.9,17.2,20.6,19.6,21.5], borderColor:'#dc2626', fill:false, tension:0.3, pointRadius:0, pointHoverRadius:3, borderWidth:2}
+    ]},
+  options:{ responsive:true, maintainAspectRatio:false, interaction:{mode:'index',intersect:false},
+    plugins:{ legend:{display:false},
+      tooltip:{...TOOLTIP,usePointStyle:true,boxWidth:3,yAlign:'bottom',callbacks:{label:ctx=>` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}%`,title:items=>items[0].label}},
+      annotation:{annotations:{t70:{type:'line',yMin:70,yMax:70,borderColor:'rgba(37,99,235,0.45)',borderDash:[6,4],borderWidth:1,label:{content:'70%',display:true,position:'start',font:{size:10},color:'rgba(37,99,235,0.45)',backgroundColor:'transparent',yAdjust:-10}}}}},
+    scales:{ x:{...AXIS_X,ticks:{...AXIS_X.ticks,maxRotation:45}}, y:{...AXIS_Y,min:0,max:100,ticks:{...AXIS_Y.ticks,callback:v=>v+'%'},title:{display:true,text:'% of installed capacity',color:'#9ca3af',font:{size:10}}} }}
+});
+
+const ocgtVals=[462.2,284.0,284.2,204.1,119.4,65.9,93.6,92.8,95.3,91.5,92.9,99.4];
+const ocgtCost=[2.36,1.42,1.39,1.05,0.63,0.34,0.48,0.47,0.50,0.45,0.44,0.49];
+const ocgtPriceDate=['01 Apr 2025','06 May 2025','03 Jun 2025','01 Jul 2025','05 Aug 2025','02 Sep 2025','30 Sep 2025','04 Nov 2025','02 Dec 2025','06 Jan 2026','03 Feb 2026','03 Mar 2026'];
+new Chart(document.getElementById('c2'), {
+  type:'bar',
+  data:{ labels:['Apr 25','May 25','Jun 25','Jul 25','Aug 25','Sep 25','Oct 25','Nov 25','Dec 25','Jan 26','Feb 26','Mar 26'],
+    datasets:[{label:'OCGT (GWh)', data:ocgtVals, backgroundColor:'#2563eb', borderRadius:0, borderSkipped:false, yAxisID:'y', order:2}]},
+  options:{ responsive:true, maintainAspectRatio:false,
+    plugins:{
+      legend:{display:false},
+      tooltip:{...TOOLTIP,boxWidth:3,callbacks:{label:function(ctx){const i=ctx.dataIndex;return[`OCGT: ${ocgtVals[i].toFixed(0)} GWh`,`Est. cost: R${ocgtCost[i].toFixed(2)} bn`,`Diesel price date: ${ocgtPriceDate[i]}`];}}}
+    },
+    scales:{ x:{...AXIS_X}, y:{...AXIS_Y,ticks:{...AXIS_Y.ticks,callback:v=>v},title:{display:true,text:'OCGT Generation (GWh)',color:'#9ca3af',font:{size:10}}} }
+  },
+  plugins:[{id:'barEndLabels',afterDatasetsDraw(chart){
+    const {ctx,scales:{y}}=chart;
+    const ds=chart.getDatasetMeta(0).data;
+    [0,ocgtVals.length-1].forEach(i=>{
+      const bar=ds[i];
+      ctx.save();
+      ctx.fillStyle='#000000';
+      ctx.font='bold 10px '+Chart.defaults.font.family;
+      ctx.textAlign='center';
+      ctx.fillText('R'+ocgtCost[i].toFixed(2)+'bn', bar.x, y.getPixelForValue(ocgtVals[i])-6);
+      ctx.restore();
+    });
+  }}]
+});
+
+const yrs3_hist=[2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024];
+const yrs3_proj=[2026,2027,2028,2029,2030,2031,2032,2033,2034,2035,2036,2037,2038,2039,2040];
+const yrs3=[...yrs3_hist,'\u200b',...yrs3_proj];
+const coalPct=[93.78,93.11,92.92,91.16,90.19,90.77,90.72,89.53,90.12,89.19,89.40,86.30,84.48,82.28,83.03];
+const solarPct=[0.01,0.03,0.03,0.09,0.42,1.10,1.29,1.66,1.78,1.94,2.38,2.77,4.24,6.66,7.97];
+const windPct=[0.01,0.02,0.02,0.02,0.42,1.23,1.66,2.75,2.50,2.63,2.68,3.54,4.06,4.96,4.46];
+const reCombPct=solarPct.map((s,i)=>+(s+windPct[i]).toFixed(2));
+const coalPctProj=[88.85,81.71,73.72,69.51,64.93,60.61,58.87,55.80,51.17,48.21,44.55,42.68,39.18,38.78,38.78];
+const solarPctProj=[1.42,4.23,7.52,10.84,14.01,17.10,17.11,16.88,16.34,16.67,17.35,18.00,20.01,20.37,20.37];
+const windPctProj=[3.41,6.46,9.48,9.26,10.40,11.24,12.60,15.60,20.69,22.52,24.55,24.93,25.02,24.64,24.64];
+const reCombPctProj=solarPctProj.map((s,i)=>+(s+windPctProj[i]).toFixed(2));
+const N_HIST=yrs3_hist.length, N_PROJ=yrs3_proj.length;
+function histOnly(arr){return[...arr,null,...Array(N_PROJ).fill(null)];}
+function projOnly(arr){return[...Array(N_HIST).fill(null),null,...arr];}
+const X_TICKS_3={...AXIS_X,ticks:{...AXIS_X.ticks,callback:(v,i)=>yrs3[i]==='\u200b'?null:yrs3[i]}};
+const GAP_LINE={type:'line',xMin:'\u200b',xMax:'\u200b',borderColor:'rgba(0,0,0,0.12)',borderWidth:1,borderDash:[3,3],label:{content:'SPLAT model 2019',display:true,position:'center',font:{size:10},color:'#9ca3af',backgroundColor:'transparent',rotation:-90}};
+
+new Chart(document.getElementById('c3a'), {
+  type:'line',
+  data:{labels:yrs3,datasets:[
+    {label:'Coal (actual)',data:histOnly(coalPct),borderColor:'#374151',fill:false,tension:0.3,pointRadius:0,pointHoverRadius:3,borderWidth:2},
+    {label:'Coal (SPLAT REF)',data:projOnly(coalPctProj),borderColor:'#374151',fill:false,tension:0.3,pointRadius:0,pointHoverRadius:3,borderWidth:1.5,borderDash:[5,4]}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+    plugins:{legend:{display:false},tooltip:{...TOOLTIP,usePointStyle:true,boxWidth:3,callbacks:{label:ctx=>ctx.parsed.y===null?null:` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}%`,title:items=>String(yrs3[items[0].dataIndex])}},
+      annotation:{annotations:{gapLine:GAP_LINE,projLabel:{type:'label',xValue:'\u200b',yValue:coalPctProj[0],content:['2019 baseline',`(${coalPctProj[0].toFixed(0)}%)`],font:{size:9},color:'#9ca3af',backgroundColor:'transparent',position:{x:'start',y:'center'},xAdjust:36,yAdjust:-18}}}},
+    scales:{x:X_TICKS_3,y:{...AXIS_Y,min:35,max:96,ticks:{...AXIS_Y.ticks,callback:v=>v+'%'},title:{display:true,text:'Coal generation (%)',color:'#9ca3af',font:{size:10}}}}}
+});
+
+new Chart(document.getElementById('c3b'), {
+  type:'line',
+  data:{labels:yrs3,datasets:[
+    {label:'Solar (actual)',data:histOnly(solarPct),borderColor:'#d97706',fill:false,tension:0.3,pointRadius:0,pointHoverRadius:3,borderWidth:2},
+    {label:'Wind (actual)',data:histOnly(windPct),borderColor:'#2563eb',fill:false,tension:0.3,pointRadius:0,pointHoverRadius:3,borderWidth:2},
+    {label:'Solar+Wind (actual)',data:histOnly(reCombPct),borderColor:'#16a34a',fill:false,tension:0.3,pointRadius:0,pointHoverRadius:3,borderWidth:2,borderDash:[5,4]},
+    {label:'Solar (SPLAT REF)',data:projOnly(solarPctProj),borderColor:'#d97706',fill:false,tension:0.3,pointRadius:0,pointHoverRadius:3,borderWidth:1.5,borderDash:[5,4]},
+    {label:'Wind (SPLAT REF)',data:projOnly(windPctProj),borderColor:'#2563eb',fill:false,tension:0.3,pointRadius:0,pointHoverRadius:3,borderWidth:1.5,borderDash:[5,4]},
+    {label:'Solar+Wind (SPLAT REF)',data:projOnly(reCombPctProj),borderColor:'#16a34a',fill:false,tension:0.3,pointRadius:0,pointHoverRadius:3,borderWidth:1.5,borderDash:[2,3]}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+    plugins:{legend:{display:false},tooltip:{...TOOLTIP,usePointStyle:true,boxWidth:3,callbacks:{label:ctx=>ctx.parsed.y===null?null:` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}%`,title:items=>String(yrs3[items[0].dataIndex])}},
+      annotation:{annotations:{gapLine:GAP_LINE}}},
+    scales:{x:X_TICKS_3,y:{...AXIS_Y,min:0,max:50,ticks:{...AXIS_Y.ticks,callback:v=>v+'%'},title:{display:true,text:'RE generation (%)',color:'#9ca3af',font:{size:10}}}}}
+});
+
+/* ── ACEC Map ── */
+(function(){
+  const NET_2040 = {
+    "Ethiopia":12.0,"Kenya":-17.64,"Uganda":0.29,"UR Tanzania":10.62,"Rwanda":2.03,
+    "Burundi":0.62,"DR Congo":-50.76,"South Sudan":-0.63,"Sudan":-7.81,"Djibouti":0.46,
+    "Angola":11.96,"Mozambique":-30.85,"Zambia":-12.16,"Zimbabwe":-8.25,"Malawi":7.15,
+    "Namibia":1.75,"Botswana":1.35,"South Africa":61.87,"Eswatini":0.77,"Lesotho":0.99,"Egypt":8.26
+  };
+  const ISO = {
+    "Egypt":"818","Ethiopia":"231","Kenya":"404","Uganda":"800","UR Tanzania":"834",
+    "Rwanda":"646","Burundi":"108","DR Congo":"180","South Sudan":"728","Sudan":"729",
+    "Djibouti":"262","Angola":"024","Mozambique":"508","Zambia":"894","Zimbabwe":"716",
+    "Malawi":"454","Namibia":"516","Botswana":"072","South Africa":"710","Eswatini":"748","Lesotho":"426"
+  };
+
+  // Determine largest importer & exporter
+  const entries = Object.entries(NET_2040).filter(([,v]) => v !== 0);
+  const largestImp = entries.filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1])[0][0]; // South Africa
+  const largestExp = entries.filter(([,v])=>v<0).sort((a,b)=>a[1]-b[1])[0][0]; // DR Congo
+
+  // Build panel cards
+  const highlights = [
+    { name: largestImp, val: NET_2040[largestImp], label: 'Largest importer', color: '#dc2626' },
+    { name: largestExp, val: NET_2040[largestExp], label: 'Largest exporter', color: '#16a34a' },
+  ];
+  const cardsEl = document.getElementById('acec-cards');
+  highlights.forEach((h, i) => {
+    const card = document.createElement('div');
+    card.className = 'ac';
+    card.style.animationDelay = (0.1 + i * 0.12) + 's';
+    const twh = Math.abs(h.val).toFixed(1);
+    const displayName = {'UR Tanzania':'Tanzania','DR Congo':'DR Congo','South Africa':'South Africa'}[h.name] || h.name;
+    card.innerHTML = `
+      <div class="ac-bar" style="background:${h.color}"></div>
+      <div class="ac-body">
+        <div class="ac-lbl">${h.label}</div>
+        <div class="ac-row">
+          <span class="ac-val">${twh}</span>
+          <span class="ac-unit" style="font-weight:700;color:#111827;">TWh</span>
+        </div>
+        <div class="ac-sub">${displayName}</div>
+      </div>`;
+    cardsEl.appendChild(card);
+  });
+
+  const container = document.getElementById('acec-wrap');
+
+  fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
+    .then(r => r.json())
+    .then(topo => {
+      const allFeatures = topojson.feature(topo, topo.objects.countries).features;
+      const acecFeatures = allFeatures.filter(f => {
+        const iso = f.id ? String(f.id).padStart(3,'0') : null;
+        return Object.values(ISO).includes(iso);
+      });
+
+      const W = container.clientWidth || 800;
+      const H = 520;
+      const LEFT_OFFSET = 80;
+
+      const proj = d3.geoMercator()
+        .fitExtent([[LEFT_OFFSET, 10], [W - 10, H - 10]], {type:'FeatureCollection', features: acecFeatures});
+      const geoPath = d3.geoPath().projection(proj);
+
+      const svg = d3.select('#acec-map-svg').attr('viewBox', `0 0 ${W} ${H}`);
+
+      // Base layer
+      svg.append('g').selectAll('path')
+        .data(acecFeatures).join('path')
+        .attr('d', geoPath)
+        .attr('fill', '#e8e8e5')
+        .attr('stroke', '#fff')
+        .attr('stroke-width', 0.8);
+
+      const gDots = svg.append('g');
+
+      acecFeatures.forEach(f => {
+        const iso = f.id ? String(f.id).padStart(3,'0') : null;
+        const name = Object.keys(ISO).find(k => ISO[k] === iso);
+        if (!name) return;
+        const val = NET_2040[name];
+        if (!val) return;
+        const cen = geoPath.centroid(f);
+        if (!cen || isNaN(cen[0])) return;
+
+        const isImp = val > 0;
+        const col = isImp ? '#dc2626' : '#16a34a';
+        const isHighlight = name === largestImp || name === largestExp;
+
+        // Pulsing ring only on the two largest
+        if (isHighlight) {
+          const ring = gDots.append('circle')
+            .attr('cx', cen[0]).attr('cy', cen[1])
+            .attr('r', 5).attr('fill', col).attr('opacity', 0.65);
+          ring.append('animate').attr('attributeName','r').attr('from','4').attr('to','15')
+            .attr('dur','1.8s').attr('repeatCount','indefinite');
+          ring.append('animate').attr('attributeName','opacity').attr('from','0.65').attr('to','0')
+            .attr('dur','1.8s').attr('repeatCount','indefinite');
+        }
+
+        // Solid dot
+        gDots.append('circle')
+          .attr('cx', cen[0]).attr('cy', cen[1])
+          .attr('r', isHighlight ? 4.5 : 2.5)
+          .attr('fill', col)
+          .attr('opacity', isHighlight ? 1 : 0.45);
+
+        // Country name label above dot (highlights only) — plain bold black
+        if (isHighlight) {
+          const displayName = {'UR Tanzania':'Tanzania','South Africa':'S. Africa','DR Congo':'DR Congo'}[name] || name;
+          svg.append('text')
+            .attr('x', cen[0]).attr('y', cen[1] - 14)
+            .attr('text-anchor', 'middle')
+            .attr('font-size', 10).attr('font-weight', '700')
+            .attr('fill', '#111827')
+            .attr('font-family', 'system-ui,sans-serif')
+            .text(displayName);
+        }
+      });
+    })
+    .catch(() => {
+      d3.select('#acec-map-svg').append('text')
+        .attr('x','50%').attr('y','50%').attr('text-anchor','middle')
+        .attr('font-size',13).attr('fill','#9ca3af')
+        .text('Map data could not be loaded');
+    });
+})();
+</script>
+
+</body>
+</html>
