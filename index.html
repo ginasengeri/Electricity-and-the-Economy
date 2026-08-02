@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Energy Systems – Data Reports</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<style>
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  margin: 0;
+  background: #f4f5f7;
+  color: #111827;
+}
+
+header {
+  text-align: center;
+  padding: 76px 20px 32px;
+  background: #f4f5f7;
+  position: relative;
+}
+
+header h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0 0 10px;
+}
+
+header p {
+  margin: 0 auto;
+  max-width: 440px;
+  color: #6b7280;
+  font-size: 0.97rem;
+  line-height: 1.55;
+}
+
+.section-wrap {
+  max-width: 1180px;
+  margin: 34px auto 0;
+  padding: 0 24px;
+}
+
+.cards-grid {
+  display: grid;
+  gap: 28px;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 10px auto 60px;
+}
+
+/* Main card design */
+.card {
+  position: relative;
+  background: rgba(55, 65, 81, 0.08);
+  border: none;
+  border-radius: 18px;
+  padding: 34px 36px;
+  min-height: 280px;
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+
+  box-shadow:
+    0 6px 18px rgba(37, 99, 235, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.card.brief {
+  box-shadow:
+    0 6px 18px rgba(16, 185, 129, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.card.tech {
+  box-shadow:
+    0 6px 18px rgba(124, 58, 237, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+/* Elegant variable-weight coloured border, softened */
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  padding: 1.5px;
+  background: linear-gradient(
+    135deg,
+    #2563eb 0%,
+    rgba(37, 99, 235, 0.55) 20%,
+    rgba(37, 99, 235, 0.12) 50%,
+    rgba(37, 99, 235, 0.55) 80%,
+    #2563eb 100%
+  );
+
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+
+  pointer-events: none;
+}
+
+/* Green border */
+.card.brief::before {
+  background: linear-gradient(
+    135deg,
+    #10b981 0%,
+    rgba(16, 185, 129, 0.55) 20%,
+    rgba(16, 185, 129, 0.12) 50%,
+    rgba(16, 185, 129, 0.55) 80%,
+    #10b981 100%
+  );
+}
+
+/* Purple border */
+.card.tech::before {
+  background: linear-gradient(
+    135deg,
+    #7c3aed 0%,
+    rgba(124, 58, 237, 0.55) 20%,
+    rgba(124, 58, 237, 0.12) 50%,
+    rgba(124, 58, 237, 0.55) 80%,
+    #7c3aed 100%
+  );
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  background: rgba(55, 65, 81, 0.12);
+  box-shadow:
+    0 16px 32px rgba(37, 99, 235, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.card.brief:hover {
+  box-shadow:
+    0 16px 32px rgba(16, 185, 129, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.card.tech:hover {
+  box-shadow:
+    0 16px 32px rgba(124, 58, 237, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.card .icon {
+  width: 32px;
+  height: 32px;
+  margin-bottom: 16px;
+  color: #2563eb;
+}
+
+.card.brief .icon { color: #10b981; }
+.card.tech .icon { color: #7c3aed; }
+
+.card .icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.card h2 {
+  margin: 0 0 9px;
+  font-size: 1.28rem;
+  font-weight: 750;
+  letter-spacing: -0.01em;
+}
+
+.card .tagline {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.93rem;
+  line-height: 1.55;
+}
+
+.card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  border-radius: 18px;
+}
+
+.card-link:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 3px;
+}
+
+.card-link:nth-child(2):focus-visible {
+  outline-color: #10b981;
+}
+
+.card-link:nth-child(3):focus-visible {
+  outline-color: #7c3aed;
+}
+
+footer {
+  text-align: center;
+  font-size: 0.75rem;
+  color: #9ca3af;
+  padding-bottom: 30px;
+}
+
+footer .links {
+  margin-bottom: 10px;
+}
+
+footer .links a {
+  color: #6b7280;
+  text-decoration: none;
+  margin: 0 10px;
+  font-weight: 600;
+}
+
+footer .links a:hover {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  header {
+    padding: 48px 20px 24px;
+  }
+
+  header h1 {
+    font-size: 2rem;
+  }
+
+  .section-wrap {
+    padding: 0 16px;
+  }
+
+  .cards-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .card {
+    min-height: 150px;
+    padding: 28px 18px;
+    border-radius: 13px;
+  }
+
+  .card::before {
+    border-radius: 13px;
+  }
+
+  .card h2 {
+    font-size: 1.05rem;
+  }
+
+  .card .tagline {
+    font-size: 0.84rem;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 420px) {
+  .cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style> 
+
+</head>
+  
+<body>
+  <header>
+    <h1>Energy Systems</h1>
+    <p>Models, market designs, and technical notes on the transition to modern power grids.</p>
+
+<main>
+
+<section class="section-wrap">
+
+  <div class="cards-grid">
+    
+<a class="card-link" href="https://ginasengeri.github.io/Electricity-and-the-Economy/energy_systems_analysis/energy_systems_analysis.html">
+    <article class="card">
+      <span class="icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+          <ellipse cx="12" cy="12" rx="9" ry="4"></ellipse>
+          <ellipse cx="12" cy="12" rx="9" ry="4" transform="rotate(60 12 12)"></ellipse>
+          <ellipse cx="12" cy="12" rx="9" ry="4" transform="rotate(120 12 12)"></ellipse>
+          <circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"></circle>
+        </svg>
+      </span>
+      <h2>Energy Systems Analysis</h2>
+      <p class="tagline">Energy systems and market designs.</p>
+    </article>
+    </a>
+    
+<a class="card-link" href="https://ginasengeri.github.io/Electricity-and-the-Economy/energy_modelling/energy_modelling.html">
+    <article class="card brief">
+      <span class="icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 15c2-7 4-10 6-10s3 3 4 6 3 6 5 6 2-2 3-4"></path>
+          <path d="M3 20h18"></path>
+        </svg>
+      </span>
+      <h2>Energy Modelling</h2>
+      <p class="tagline">Optimization models for energy markets.</p>
+    </article>
+    </a>
+
+<a class="card-link" href="https://ginasengeri.github.io/Electricity-and-the-Economy/documentation/documentation.html">
+    <article class="card tech">
+      <span class="icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 3h9l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"></path>
+          <line x1="8.5" y1="12" x2="15.5" y2="12"></line>
+          <line x1="8.5" y1="16" x2="15.5" y2="16"></line>
+        </svg>
+      </span>
+      <h2>Documentation</h2>
+      <p class="tagline">Technical appendices, model computation, and methodology notes.</p>
+    </article>
+    </a>
+    
+  </div>
+</section>
+</main>
+
+  <footer>
+    <div class="links">
+      <a href="#">Home</a>
+      <a href="#">Contact</a>
+      <a href="#">Data source</a>
+    </div>
+    &copy; 2026
+  </footer>
+</body>
+</html>
