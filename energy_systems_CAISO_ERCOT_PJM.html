@@ -1,1 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta property="og:title" content="How Market Design Shapes Battery Economics in CAISO, ERCOT, and PJM" />
+  <meta property="og:description" content="Comparing BESS penetration and market incentives across CAISO, ERCOT, and PJM." />
+  <meta property="og:image" content="https://raw.githubusercontent.com/ginasengeri/energy-systems/main/energy_systems_analysis/CAISO_ERCOT_PJM/images/preview_image.png" />
+  <title>Energy Systems — CAISO / ERCOT / PJM</title>
+  <style>
+:root {
+  --bg-page: #f4f5f7; --bg-card: #ffffff; --border-soft: #e0e3e8;
+  --accent: #2563eb; --accent-soft: #dbeafe; --text-main: #111827;
+  --text-muted: #6b7280; --table-header: #f3f4f6; --chip: #eef2ff;
+}
+* { box-sizing: border-box; }
+body { margin: 0; padding: 32px 16px; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background-color: var(--bg-page); color: var(--text-main); }
+.report-container { max-width: 1100px; margin: 0 auto; background: var(--bg-card); border-radius: 12px; padding: 28px 32px 36px; box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12); }
+header { text-align: center; padding: 20px 0 10px; }
+header .label { font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; color: #6b7280; margin-bottom: 12px; }
+header h1 { font-size: 1.4rem; font-weight: 800; margin: 0 0 12px; line-height: 1.25; }
+header p { margin: 0 auto; color: #6b7280; font-size: 0.94rem; }
+.meta { text-align: center; font-size: 0.8rem; color: #9ca3af; margin-top: 10px; margin-bottom: 0; font-weight: 600; }
+h2 { margin-top: 24px; margin-bottom: 8px; font-size: 1.05rem; font-weight: 700; border-bottom: 1px solid var(--border-soft); padding-bottom: 4px; }
+.section p { font-size: 0.95rem; line-height: 1.7; color: #374151; margin: 0 0 12px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 0px 0 16px; justify-content: center; }
+.chip { background: var(--chip); border: 1px solid rgba(37, 99, 235, 0.15); color: #1f2a5a; padding: 6px 10px; border-radius: 999px; font-size: 0.82rem; font-weight: 650; white-space: nowrap; }
+.kpi-grid { display: grid; justify-content: center; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-top: 10px; margin-bottom: 10px; }
+.kpi-card { background: var(--accent-soft); border-radius: 10px; padding: 10px 12px; text-align: center; border: 1px solid rgba(37, 99, 235, 0.35); }
+.kpi-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 4px; }
+.kpi-value { font-size: 1.1rem; font-weight: 600; }
+table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: unset; }
+th, td { border: 1px solid var(--border-soft); padding: 6px 8px; text-align: left; white-space: nowrap; }
+th { background-color: var(--table-header); font-weight: 600; }
+ul { margin-left: 20px; margin-top: 6px; margin-bottom: 8px; }
+ol { margin-left: 20px; }
+li { font-size: 0.95rem; line-height: 1.7; color: #374151; }
+footer { margin-top: 28px; padding-top: 16px; border-top: 1px solid #e0e3e8; text-align: center; font-size: 0.75rem; color: #9ca3af; }
+footer a { color: #2563eb; text-decoration: none; }
+a, a:visited, a:hover, a:active { color: #2563eb; }
+footer a:hover { text-decoration: underline; }
+h2 + ol, p + ol { margin-top: 14px; margin-bottom: 18px; }
+ol li { margin-bottom: 8px; }
+sup { font-size: 0.75em; }
+sup a { text-decoration: none; }
+.chart-wrap { position: relative; width: 65%; margin: 12px auto 0; height: 380px; }
+.chart-wrap canvas { display: block; }
+.section p.chart-fig { font-size: 0.85rem; color: #9ca3af; text-align: left; margin-bottom: 6px; margin-top: 16px; }
+.custom-legend { display: flex; flex-wrap: wrap; gap: 6px 24px; justify-content: center; margin-bottom: 12px; margin-top: 12px; }
+.cl-item { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: #374151; }
+.cl-line { width: 22px; height: 2.5px; border-radius: 2px; flex-shrink: 0; display: block; }
+.dual-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0; }
+.dual-filter { display: flex; gap: 6px; align-items: center; }
+.df-btn { padding: 4px 14px; border-radius: 999px; font-size: 0.78rem; font-weight: 600; cursor: pointer; border: 1px solid var(--border-soft); background: var(--table-header); color: var(--text-muted); transition: all .15s; font-family: inherit; }
+.df-btn.active[data-grid="CAISO"]    { background: #eff6ff; border-color: #2563eb; color: #2563eb; }
+.df-btn.active[data-grid="ERCOT"]    { background: #f5f0ff; border-color: #7c3aed; color: #7c3aed; }
+.df-btn.active[data-grid="PJM"]      { background: #f0fdf4; border-color: #2d7d46; color: #2d7d46; }
+.df-btn.active[data-dual="CAISO"]    { background: #eff6ff; border-color: #2563eb; color: #2563eb; }
+.df-btn.active[data-dual="ERCOT"]    { background: #f5f0ff; border-color: #7c3aed; color: #7c3aed; }
+.df-btn.active[data-dual="PJM"]      { background: #f0fdf4; border-color: #2d7d46; color: #2d7d46; }
+.df-btn.active[data-storage="CAISO"] { background: #eff6ff; border-color: #2563eb; color: #2563eb; }
+.df-btn.active[data-storage="ERCOT"] { background: #f5f0ff; border-color: #7c3aed; color: #7c3aed; }
+.df-btn.active[data-vol="CAISO"] { background: #eff6ff; border-color: #2563eb; color: #2563eb; }
+.df-btn.active[data-vol="ERCOT"] { background: #f5f0ff; border-color: #7c3aed; color: #7c3aed; }
+.df-btn.active[data-vol="PJM"]   { background: #f0fdf4; border-color: #2d7d46; color: #2d7d46; }
+.qbtn { padding: 2px 9px; border-radius: 999px; font-size: 0.72rem; font-weight: 500; cursor: pointer; border: 1px solid #e0e3e8; background: transparent; color: #9ca3af; transition: all .15s; font-family: inherit; }
+.qbtn.active { background: #f3f4f6; border-color: #9ca3af; color: #6b7280; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="report-container">
+    <header>
+      <div class="label">Energy Systems</div>
+      <h1>How Market Design Shapes Battery Economics in CAISO, ERCOT, and PJM</h1>
+      <p>Comparing BESS penetration and market incentives across CAISO, ERCOT, and PJM.</p>
+      <div class="meta">CAISO · ERCOT · PJM &bull; 2025</div>
+    </header>
 
+<section class="section">
+<h2>The Duck Curve</h2>
+<p>
+  Increasing renewable buildout has seen a shift in net load profiles, with a drop in demand during the
+  day followed by steep ramping in the evenings. The resulting price spreads provide an opportunity for
+  arbitrage where batteries shift energy from cheap to expensive hours.
+  CAISO, ERCOT and PJM demonstrate this effect with varying degrees of renewable and battery penetration.
+</p>
+
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,260px));gap:50px;justify-content:center;margin:15px 0 6px;">
+  <div style="background:#fafafa;border:1px solid #e0e3e8;border-radius:10px;padding:12px 14px;text-align:center;">
+    <div style="font-size:0.78rem;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;color:#2563eb;">CAISO · California</div>
+    <div style="font-size:1.25rem;font-weight:700;color:#111827;margin-top:3px;">36.1%</div>
+    <div style="font-size:0.75rem;color:#6b7280;">peak penetration</div>
+    <div style="font-size:0.8rem;font-weight:600;color:#374151;margin-top:6px;">43.6 GW <span style="font-weight:400;color:#9ca3af;">peak load</span></div>
+  </div>
+  <div style="background:#fafafa;border:1px solid #e0e3e8;border-radius:10px;padding:12px 14px;text-align:center;">
+    <div style="font-size:0.78rem;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;color:#7c3aed;">ERCOT · Texas</div>
+    <div style="font-size:1.25rem;font-weight:700;color:#111827;margin-top:3px;">15.7%</div>
+    <div style="font-size:0.75rem;color:#6b7280;">peak penetration</div>
+    <div style="font-size:0.8rem;font-weight:600;color:#374151;margin-top:6px;">83.9 GW <span style="font-weight:400;color:#9ca3af;">peak load</span></div>
+  </div>
+  <div style="background:#fafafa;border:1px solid #e0e3e8;border-radius:10px;padding:12px 14px;text-align:center;">
+    <div style="font-size:0.78rem;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;color:#2d7d46;">PJM · Mid-Atlantic</div>
+    <div style="font-size:1.25rem;font-weight:700;color:#111827;margin-top:3px;">0.26%</div>
+    <div style="font-size:0.75rem;color:#6b7280;">peak penetration</div>
+    <div style="font-size:0.8rem;font-weight:600;color:#374151;margin-top:6px;">160.5 GW <span style="font-weight:400;color:#9ca3af;">peak load</span></div>
+  </div>
+</div>
+<br>
+
+ <!-- Dual axis chart -->
+  <div style="margin-top:16px;">
+    <div class="dual-header">
+      <div class="dual-filter">
+        <span style="font-size:0.90rem;font-weight:600;color:#6b7280;">Grid:</span>
+        <button class="df-btn active" data-dual="CAISO" onclick="setDual('CAISO', currentDualQ)">CAISO</button>
+        <button class="df-btn"        data-dual="ERCOT" onclick="setDual('ERCOT', currentDualQ)">ERCOT</button>
+        <button class="df-btn"        data-dual="PJM"   onclick="setDual('PJM',   currentDualQ)">PJM</button>
+      </div>
+    </div>
+  </div>
+  <div class="chart-wrap">
+    <canvas id="dualChart"></canvas>
+  </div>
+  <div class="custom-legend" id="dualLegend"></div>
+  <p class="chart-fig" id="dualFig"></p>
+<br>
+<p>
+  CAISO exhibits the strongest duck curve, having the largest share of solar relative to its grid size.
+  ERCOT's renewable and BESS buildout is beginning to show a similar price formation, while
+  PJM's battery market is still emerging, showing a more traditional shape with a steady increase throughout the day. 
+</p>
+
+<h2>Key Insights</h2>
+<ol>
+  <li>CAISO is beginning to show arbitrage compression, with negative pricing hours dropping by 15.5% since 2024.</li>
+  <li>Ancillary Responsive Reserve Service (RRS) prices in ERCOT fell by 48% from Q3 2024 to Q3 2025, consistent with ancillary service saturation.</li>
+  <li>PJM's battery capacity remains low at &lt;0.3% of peak demand, with a development queue of mostly four-hour systems.</li>
+</ol>
+
+</section>
+
+<section class="section">  
+<h2>Battery Value Evolution</h2>
+
+<p>
+  As battery penetration grows, early revenue streams saturate, requiring developers to capture value across a diverse range of services.
+</p>
+<p>
+  Early deployment is driven by ancillary services, 
+  where fast-response, short-duration batteries 
+  are well suited to frequency regulation. 
+  Because batteries have lower marginal costs
+  than conventional providers, these markets
+  tend to saturate quickly as storage capacity
+  increase, as reflected in ERCOT's 48% drop in RRS prices.
+</p>
+<p>
+  Value then shifts toward energy arbitrage. 
+  Longer-duration assets, such as CAISO's 3.8-hour
+  hour fleet average, allow operators to capture 
+  a broader share of intraday price spreads 
+  and optimize dispatch over more pricing 
+  hours. However, as battery deployment grows, 
+  merchant trading reduces negative pricing 
+  and compresses arbitrage spreads, weakening 
+  standalone revenues, as is currently playing out in CAISO.
+</p>
+
+<p>
+Beyond this point, battery economics depend heavily on market design and the revenue opportunities each market creates.
+</p>
+
+<h2>Market Design and Battery Opportunities</h2>
+<p>
+  CAISO's hour-on-hour prices remained relatively stable in Q3 2025 due to mild summer conditions and a solar fleet that met
+  up to 82% of daytime demand, keeping standard deviation under $13/MWh. With shrinking spreads, future battery value
+  relies primarily on Resource Adequacy (RA)
+  payments, providing greater revenue certainty but less merchant upside than markets driven by volatility. 
+</p>
+<p> 
+  PJM and ERCOT market prices showed more deviation in the evening hours with standard deviations of over $66/MWh and $59/MWh respectively.
+</p>
+
+<!-- Price Volatility Chart -->
+<div style="margin-top:16px;">
+  <div class="dual-header">
+    <div class="dual-filter"></div>
+  </div>
+</div>
+<div class="chart-wrap">
+  <canvas id="volChart"></canvas>
+</div>
+<div class="custom-legend" id="volLegend"></div>
+<p class="chart-fig" id="volFig">Hour-on-hour price variability (std dev $/MWh), Q3 2025.</p>
+
+<br>
+<p>
+  Maximum daily price spreads show PJM's merchant storage opportunity continuing to rise with spreads consistently above ERCOT throughout most of 
+  July and into September.
+</p>
+
+<!-- Daily Max-Min Spread Chart -->
+<div class="chart-wrap">
+  <canvas id="spreadChart"></canvas>
+</div>
+<div class="custom-legend" id="spreadLegend"></div>
+<p class="chart-fig" id="spreadFig"></p>
+
+<p>
+  ERCOT secures reliability through scarcity pricing rather than capacity payments. 
+  Optimization agreements allow developers to retain exposure to market volatility while
+  transferring part of the downside risk to contracted operators.
+  Uncertainty around the timing of demand growth and recent periods of lower volatility have increased
+  developer interest in downside protection, making partially contracted revenue streams more attractive<sup><a href="ref1">[1]</a></sup>.
+</p>
+<p>
+  PJM represents a hybrid case, operating in a capacity market that is experiencing increasing volatility. 
+  Capacity is more
+  expensive to procure, clearing at the $329/MWh-day price cap in 2025. With growing demand, batteries are positioned
+  to earn from both contracted capacity payments and merchant revenues.  
+</p>
+<p>  
+  While capacity payments improve revenue certainty, they can weaken scarcity signals as markets mature and
+  make it difficult to justify new storage, despite an increased need for system flexibility.
+  For battery investors, this directly affects the investment case
+  because batteries earn from spreads and quick responses to system changes,
+  rather than simple energy generation.
+</p>
+<p>
+  Unlike CAISO's 10-15 year RA contracts, PJM's capacity revenues are determined on a yearly basis, meaning that developers
+  do not secure long-term revenues for the duration of projects.
+  In addition, the Market Monitoring Unit's (MMU) recommendations now require storage assets with capacity interconnection rights to participate
+  in the annual capacity market auctions<sup><a href="ref2">[2]</a></sup>. Previously exempt due to duration limits, batteries are now liable
+  for strict Non-Performance charges worth millions of dollars if they fail to deliver during emergency events. This makes
+  underwriting more important to ensuring batteries remain commercially viable over their project life.  
+</p>
+<p>
+  With the $329/MW-day cap intervention, market rules place greater emphasis on capacity revenues. 
+  However, the MMU's Effective Load Carrying Capability (ELCC) recommendations continue to reduce the accredited capacity of batteries as storage
+  penetration increases. This lowers the capacity revenues each project can earn over time. Merchant profits
+  therefore remain crucial to the current investment case. 
+<p>  
+  Further battery development in PJM depends on 
+  whether scarcity signals and capacity incentives remain strong enough to preserve battery value, and how developers
+  balance contracted and merchant revenues.
+</p>
+
+<h2>Outlook</h2>
+<p>
+As ancillary service markets become saturated and energy arbitrage spreads compress, long-term battery 
+revenues are heavily influenced by market design:
+</p>
+<ol>
+  <li>CAISO: revenues are supported by Resource Adequacy payments and utility procurement.</li>
+  <li>ERCOT: revenues rely on scarcity pricing, with hybrid agreements balancing merchant 
+    upside and downside protection.</li>
+  <li>PJM: revenues combine capacity payments and merchant earnings, with long-term value
+    depending on the balance between the two.</li>
+</ol> 
+
+</section>
+
+  <section class="section">
+  <h2>Data Source</h2>
+  <p>
+    Grid Status (2025). <em> Insights</em>. Available at: <a href="https://www.gridstatus.io/">https://www.gridstatus.io/</a>
+  </p>
+  </section>
+
+  <section class="section">
+  <h2>References</h2>
+  <ol>
+    <li id="ref1">
+      GridBeyond (2026).
+      <em>Battery storage markets: what's happening in ERCOT, CAISO, PJM, and Japan</em>
+      Available at:
+      <a href="https://gridbeyond.com/battery-storage-markets-whats-happening-in-ercot-caiso-pjm-and-japan/" target="_blank">
+        https://gridbeyond.com/battery-storage-markets-whats-happening-in-ercot-caiso-pjm-and-japan/
+      </a>
+     </li> 
+    <li id="ref2">
+      2025 Annual State of the Market Report for PJM
+      <em>Capacity Market</em>
+      <a href="https://www.monitoringanalytics.com/reports/PJM_State_of_the_Market/2025/2025-som-pjm-sec5.pdf" target="_blank">
+        https://www.monitoringanalytics.com/reports/PJM_State_of_the_Market/2025.pdf
+      </a>
+    </li>
+  </ol>
+  </section>
+
+  </div>
+
+<footer>
+  <p>Data source: CAISO · ERCOT · PJM · 2025</p>
+  <a href="energy_systems.html">← Back to Energy Systems</a>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+
+<!-- Load Price Dual axis chart -->
+<script>
+(async () => {
+  const base = "https://raw.githubusercontent.com/ginasengeri/energy-systems/main/";
+  const [caisoLoad, ercotLoad, pjmLoad, caisoPrice, ercotPrice, pjmPrice] = await Promise.all([
+    d3.csv(base + "energy_systems_analysis/CAISO_ERCOT_PJM/data/CAISO_net_load_hrly_avg.csv"),
+    d3.csv(base + "energy_systems_analysis/CAISO_ERCOT_PJM/data/ERCOT_net_load_hrly_avg.csv"),
+    d3.csv(base + "energy_systems_analysis/CAISO_ERCOT_PJM/data/PJM_net_load_hrly_avg.csv"),
+    d3.csv(base + "energy_systems_analysis/CAISO_ERCOT_PJM/data/CAISO_lmp_2025.csv"),
+    d3.csv(base + "energy_systems_analysis/CAISO_ERCOT_PJM/data/ERCOT_lmp_2025.csv"),
+    d3.csv(base + "energy_systems_analysis/CAISO_ERCOT_PJM/data/PJM_lmp_2025.csv"),
+  ]);
+  const hours = caisoLoad.map(d => +d.hour);
+  const gridColors = { CAISO: '#2563eb', ERCOT: '#7c3aed', PJM: '#2d7d46' };
+  const loadData  = { CAISO: caisoLoad,  ERCOT: ercotLoad,  PJM: pjmLoad  };
+  const priceData = { CAISO: caisoPrice, ERCOT: ercotPrice, PJM: pjmPrice };
+  let dualChart;
+  window.currentDualGrid = 'CAISO';
+  window.currentDualQ    = '2025Q3';
+
+  function buildDualChart(grid, quarter) {
+    if (dualChart) dualChart.destroy();
+    const color = gridColors[grid]; const priceColor = '#9ca3af';
+    dualChart = new Chart(document.getElementById('dualChart').getContext('2d'), {
+      type: 'line',
+      data: { labels: hours, datasets: [
+        { label: 'Net Load', data: loadData[grid].map(d => +d[quarter] / 1000), borderColor: color, borderWidth: 2, pointRadius: 0, pointHoverRadius: 0, tension: 0.3, fill: false, yAxisID: 'yLoad' },
+        { label: 'Price Spread', data: priceData[grid].map(d => +d[quarter]), borderColor: priceColor, borderWidth: 1.5, borderDash: [4, 3], pointRadius: 0, pointHoverRadius: 0, tension: 0.3, fill: false, yAxisID: 'yPrice' }
+      ]},
+      options: {
+        responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+        plugins: { legend: { display: false }, tooltip: { backgroundColor: '#ffffff', borderColor: '#e0e3e8', borderWidth: 1, titleColor: '#111827', bodyColor: '#374151', padding: 8, displayColors: false, callbacks: { title: items => `Hour ${hours[items[0].dataIndex]}:00`, label: ctx => ctx.datasetIndex === 0 ? ` Net Load: ${ctx.parsed.y.toFixed(1)} GW` : ` Price Spread: $${ctx.parsed.y.toFixed(2)}/MWh` } } },
+        scales: {
+          x: { grid: { display: false }, border: { color: '#e0e3e8' }, title: { display: true, text: 'Hour of Day', color: '#9ca3af', font: { size: 11 } }, ticks: { color: '#6b7280', font: { size: 11 }, maxRotation: 0, callback: (val, i) => i % 6 === 0 ? `${hours[i]}:00` : '' } },
+          yLoad:  { type: 'linear', position: 'left',  grid: { display: false }, border: { color: '#e0e3e8' }, title: { display: true, text: 'Avg Net Load (GW)',         color: '#9ca3af', font: { size: 11 } }, ticks: { color: '#6b7280', font: { size: 11 }, callback: v => v.toFixed(0) } },
+          yPrice: { type: 'linear', position: 'right', grid: { display: false }, border: { color: '#e0e3e8' }, title: { display: true, text: 'Avg $/MWh above daily min', color: '#9ca3af', font: { size: 11 } }, ticks: { color: '#6b7280', font: { size: 11 }, callback: v => '$' + v.toFixed(0) } },
+        }
+      }
+    });
+    const qLabel = { '2025Q1':'Q1','2025Q2':'Q2','2025Q3':'Q3','2025Q4':'Q4' }[quarter];
+    document.getElementById('dualFig').innerHTML = 
+      `<span style="font-family: system-ui; font-size: 0.8rem;">Average hourly net load (GW) and price spread ($/MWh above daily min), ${grid} ${qLabel} 2025.
+       Data provided by <a href="https://www.gridstatus.io/" target="_blank">Grid Status</a>
+      <img src="${base}energy_systems_analysis/CAISO_ERCOT_PJM/images/gridstatus_logo.png" style="height:17px; vertical-align:middle;">.`;    
+    const legendEl = document.getElementById('dualLegend'); legendEl.innerHTML = '';
+    [{ color, label: 'Net Load (GW)', dash: false }, { color: priceColor, label: 'Price Spread ($/MWh above daily min)', dash: true }].forEach(s => {
+      const item = document.createElement('div'); item.className = 'cl-item';
+      const lineStyle = s.dash ? `border-top:2px dashed ${s.color};height:0;width:22px;background:none;flex-shrink:0;align-self:center;` : `background:${s.color};width:22px;height:2.5px;border-radius:2px;flex-shrink:0;display:block;align-self:center;`;
+      item.innerHTML = `<div style="${lineStyle}"></div><span>${s.label}</span>`; legendEl.appendChild(item);
+    });
+  }
+
+  window.setDual = function(grid, quarter) {
+    window.currentDualGrid = grid; window.currentDualQ = quarter;
+    document.querySelectorAll('.df-btn[data-dual]').forEach(b => b.classList.toggle('active', b.dataset.dual === grid));
+    document.querySelectorAll('.qbtn[data-dualq]').forEach(b => b.classList.toggle('active', b.dataset.dualq === quarter));
+    buildDualChart(grid, quarter);
+  };
+  buildDualChart('CAISO', '2025Q3');
+})();
+</script>
+
+<!-- Price Stdev Chart -->
+<script>
+(async () => {
+  const base = "https://raw.githubusercontent.com/ginasengeri/energy-systems/main/";
+  const [caiso, ercot, pjm] = await Promise.all([
+    d3.csv(base + "energy_systems_analysis/CAISO_ERCOT_PJM/data/CAISO_hourly_volatility.csv"),
+    d3.csv(base + "energy_systems_analysis/CAISO_ERCOT_PJM/data/ERCOT_hourly_volatility.csv"),
+    d3.csv(base + "energy_systems_analysis/CAISO_ERCOT_PJM/data/PJM_hourly_volatility.csv"),
+  ]);
+  const hours = caiso.map(d => +d.hour);
+  const gridDefs = [
+    { label: 'CAISO', color: '#2563eb', data: caiso },
+    { label: 'ERCOT', color: '#7c3aed', data: ercot },
+    { label: 'PJM',   color: '#2d7d46', data: pjm   },
+  ];
+  let volChart;
+
+  function buildVolChart(quarter) {
+    if (volChart) volChart.destroy();
+    volChart = new Chart(document.getElementById('volChart').getContext('2d'), {
+      type: 'line',
+      data: { labels: hours, datasets: gridDefs.map(g => ({
+        label: g.label,
+        data: g.data.map(d => +d[quarter]),
+        borderColor: g.color, borderWidth: 2,
+        pointRadius: 0, pointHoverRadius: 0, tension: 0.3, fill: false,
+      }))},
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: { legend: { display: false }, tooltip: {
+          backgroundColor: '#ffffff', borderColor: '#e0e3e8', borderWidth: 1,
+          titleColor: '#111827', bodyColor: '#374151', padding: 8, displayColors: false,
+          callbacks: {
+            title: items => `Hour ${hours[items[0].dataIndex]}:00`,
+            label: ctx => ` ${ctx.dataset.label}: $${ctx.parsed.y.toFixed(2)}/MWh`,
+          }
+        }},
+        scales: {
+          x: { grid: { display: false }, border: { color: '#e0e3e8' }, title: { display: true, text: 'Hour of Day', color: '#9ca3af', font: { size: 11 } }, ticks: { color: '#6b7280', font: { size: 11 }, maxRotation: 0, callback: (val, i) => i % 6 === 0 ? `${hours[i]}:00` : '' } },
+          y: { grid: { display: false }, border: { color: '#e0e3e8' }, title: { display: true, text: 'Hour-on-hour price std dev ($/MWh)', color: '#9ca3af', font: { size: 11 } }, ticks: { color: '#6b7280', font: { size: 11 }, callback: v => '$' + v.toFixed(0) } }
+        }
+      }
+    });
+    const qLabel = { '2025Q1':'Q1','2025Q2':'Q2','2025Q3':'Q3','2025Q4':'Q4' }[quarter];
+    document.getElementById('volFig').innerHTML =
+      `<span style="font-family: system-ui; font-size: 0.8rem;">Hour-on-hour price volatility (std dev $/MWh), ${qLabel} 2025. Note: standard deviation is calculated across days for each hour, not hour-to-hour changes.
+       Data provided by <a href="https://www.gridstatus.io/" target="_blank">Grid Status</a>.`;
+    const legendEl = document.getElementById('volLegend'); legendEl.innerHTML = '';
+    gridDefs.forEach(g => {
+      const item = document.createElement('div'); item.className = 'cl-item';
+      item.innerHTML = `<div class="cl-line" style="background:${g.color};width:22px;height:2.5px;border-radius:2px;flex-shrink:0;display:block;align-self:center;"></div><span>${g.label}</span>`;
+      legendEl.appendChild(item);
+    });
+  }
+
+  window.setVol = function(quarter) {
+    document.querySelectorAll('.qbtn[data-volq]').forEach(b => b.classList.toggle('active', b.dataset.volq === quarter));
+    buildVolChart(quarter);
+  };
+  buildVolChart('2025Q3');
+})();
+</script>
+
+<!-- Daily Max-Min Spread Chart -->
+<script>
+(async () => {
+  const base = "https://raw.githubusercontent.com/ginasengeri/energy-systems/main/";
+  const [caiso, ercot, pjm] = await Promise.all([
+    d3.csv(base + "energy_systems_analysis/CAISO_ERCOT_PJM/data/CAISO_daily_spread_q3_2025.csv"),
+    d3.csv(base + "energy_systems_analysis/CAISO_ERCOT_PJM/data/ERCOT_daily_spread_q3_2025.csv"),
+    d3.csv(base + "energy_systems_analysis/CAISO_ERCOT_PJM/data/PJM_daily_spread_q3_2025.csv"),
+  ]);
+  const gridDefs = [
+    { label: 'CAISO', color: '#2563eb', data: caiso },
+    { label: 'ERCOT', color: '#7c3aed', data: ercot },
+    { label: 'PJM',   color: '#2d7d46', data: pjm   },
+  ];
+  const dates = caiso.map(d => d[""]);
+
+  new Chart(document.getElementById('spreadChart').getContext('2d'), {
+    type: 'line',
+    data: { labels: dates, datasets: gridDefs.map(g => ({
+      label: g.label,
+      data: g.data.map(d => +d.daily_spread),
+      borderColor: g.color, borderWidth: 1.5,
+      pointRadius: 0, pointHoverRadius: 0, tension: 0.3, fill: false,
+    }))},
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { display: false }, tooltip: {
+        backgroundColor: '#ffffff', borderColor: '#e0e3e8', borderWidth: 1,
+        titleColor: '#111827', bodyColor: '#374151', padding: 8, displayColors: false,
+        callbacks: {
+          title: items => items[0].label,
+          label: ctx => ` ${ctx.dataset.label}: $${ctx.parsed.y.toFixed(2)}/MWh`,
+        }
+      }},
+      scales: {
+        x: { grid: { display: false }, border: { color: '#e0e3e8' }, title: { display: true, text: 'Date', color: '#9ca3af', font: { size: 11 } }, ticks: { color: '#6b7280', font: { size: 11 }, maxRotation: 0, maxTicksLimit: 8 } },
+        y: { grid: { display: false }, border: { color: '#e0e3e8' }, title: { display: true, text: 'Daily Max-Min Spread ($/MWh)', color: '#9ca3af', font: { size: 11 } }, ticks: { color: '#6b7280', font: { size: 11 }, callback: v => '$' + v.toFixed(0) } }
+      }
+    }
+  });
+
+  document.getElementById('spreadFig').innerHTML =
+    `<span style="font-family: system-ui; font-size: 0.8rem;">Daily max-min price spread ($/MWh), Q3 2025. Data provided by <a href="https://www.gridstatus.io/" target="_blank">Grid Status</a>.`;
+
+  const legendEl = document.getElementById('spreadLegend');
+  gridDefs.forEach(g => {
+    const item = document.createElement('div'); item.className = 'cl-item';
+    item.innerHTML = `<div class="cl-line" style="background:${g.color};width:22px;height:2.5px;border-radius:2px;flex-shrink:0;display:block;align-self:center;"></div><span>${g.label}</span>`;
+    legendEl.appendChild(item);
+  });
+})();
+</script>
+
+</body>
+</html>
